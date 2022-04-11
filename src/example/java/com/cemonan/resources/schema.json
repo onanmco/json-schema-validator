@@ -44,7 +44,7 @@
                             }
                         },
                         "message": {
-                            "pattern": "$.contact.phone:: must be in E.164 format starting with US prefix (+1)"
+                            "pattern": "$.contact.phone: must be in E.164 format starting with US prefix (+1)"
                         }
                     }
                 }
