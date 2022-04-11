@@ -1,0 +1,7 @@
+{
+  "message": "Hello world!",
+  "country": "US",
+  "contact": {
+    "phone": "+44123456789"
+  }
+}

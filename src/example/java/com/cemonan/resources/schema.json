@@ -1,0 +1,79 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "type": "object",
+    "properties": {
+        "country": {
+            "enum": ["US", "CA"]
+        },
+        "contact": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                }
+            },
+            "required": ["name", "phone"]
+        },
+        "message": {
+            "type": "string",
+            "minLength": 0,
+            "maxLength": 10
+        }
+    },
+    "required": ["country", "contact", "message"],
+    "allOf": [
+        {
+            "if": {
+                "properties": {
+                    "country": {
+                        "const": "US"
+                    }
+                },
+                "required": [ "country" ]
+            },
+            "then": {
+                "properties": {
+                    "contact": {
+                        "properties": {
+                            "phone": {
+                                "type": "string",
+                                "pattern": "^\\+1[0-9]{3,13}$"
+                            }
+                        },
+                        "message": {
+                            "pattern": "$.contact.phone:: must be in E.164 format starting with US prefix (+1)"
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "if": {
+                "properties": {
+                    "country": {
+                        "const": "CA"
+                    }
+                },
+                "required": ["country"]
+            },
+            "then": {
+                "properties": {
+                    "contact": {
+                        "properties": {
+                            "phone": {
+                                "type": "string",
+                                "pattern": "^\\+44[0-9]{3,13}$"
+                            },
+                            "message": {
+                                "pattern": "$.contact.phone: must be in E.164 format starting with UK prefix (+44)"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    ]
+}
