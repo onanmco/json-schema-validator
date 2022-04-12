@@ -14,9 +14,6 @@ import java.util.Set;
 
 public class JSONValidator {
 
-    private final static int SEEK = 256;
-    private final static int BUF_LEN = 1024;
-
     private JsonSchemaFactory jsonSchemaFactory;
     private ObjectMapper objectMapper;
     private JsonSchema schema;
@@ -37,16 +34,6 @@ public class JSONValidator {
         this.errors = new ArrayList<>();
     }
 
-    private byte[] read(InputStream in) throws IOException {
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        byte[] buffer = new byte[BUF_LEN];
-        int readBytes = 0;
-        while ((readBytes = in.read(buffer, 0, SEEK)) != -1) {
-            bos.write(buffer, 0, readBytes);
-        }
-        return bos.toByteArray();
-    }
-
     public JSONValidator schema(InputStream inputStream) throws IOException {
         this.schema = jsonSchemaFactory.getSchema(objectMapper.readTree(inputStream));
         return this;
@@ -65,7 +52,7 @@ public class JSONValidator {
 
     public JSONValidator json(String pathToJson) throws IOException {
         InputStream in = new FileInputStream(pathToJson);
-        this.json = objectMapper.readTree(this.read(in));
+        this.json = objectMapper.readTree(in);
         return this;
     }
 
@@ -73,16 +60,14 @@ public class JSONValidator {
         return this.errors;
     }
 
-    public boolean isValid() throws IOException {
+    public boolean isValid() {
         Set<ValidationMessage> messages = this.schema.validate(this.json);
 
         if (messages.isEmpty()) {
             return true;
         }
 
-        messages.forEach((ValidationMessage vm) -> {
-            this.errors.add(vm.getMessage());
-        });
+        messages.forEach((ValidationMessage vm) -> this.errors.add(vm.getMessage()));
 
         return false;
     }
